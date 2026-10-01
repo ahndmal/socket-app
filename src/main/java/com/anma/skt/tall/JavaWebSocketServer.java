@@ -39,10 +39,13 @@ public class JavaWebSocketServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         conn.send("Welcome to the server!"); //This method sends a message to the new client
+
         broadcast("new connection: " + handshake
                 .getResourceDescriptor()); //This method sends a message to all clients connected
+
         System.out.println(
-                conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!");
+                conn.getRemoteSocketAddress().getAddress().getHostAddress()
+                        + " entered the room!");
     }
 
     @Override
@@ -53,32 +56,41 @@ public class JavaWebSocketServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        Message msg = new Message("Hi there!", LocalDateTime.now(), "John Doe");
-        String msgJson = gson.toJson(msg);
+
+        System.out.println(" >>>>>>> on message: STRING");
+        System.out.println(message.toString());
+
+        Message reply = new Message("Got it. Replying...", LocalDateTime.now().toString(), "John Doe");
+        String msgJson = gson.toJson(reply);
         broadcast(msgJson);
 
-        ByteBuffer byteBuffer = ByteBuffer.wrap("Hello".getBytes());
-        ByteBufferUtils.transferByteBuffer(byteBuffer, ByteBuffer.allocate(2));
-
-        System.out.println(conn + ": " + message);
+//        ByteBuffer byteBuffer = ByteBuffer.wrap("Hello".getBytes());
+//        ByteBufferUtils.transferByteBuffer(byteBuffer, ByteBuffer.allocate(2));
     }
 
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
 
-        Message msg = new Message("Hi there!", LocalDateTime.now(), "John Doe");
-        String msgJson = gson.toJson(msg);
-        broadcast(msgJson);
+        System.out.println(" >>>>>>> on message: ByteBuffer");
+
+//        Message msg = new Message("Hi there!", LocalDateTime.now(), "John Doe");
+//        String msgJson = gson.toJson(msg);
+//
+//        System.out.println(msgJson);
+//
+//        broadcast(msgJson);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(message.array())));
         StringBuilder builder = new StringBuilder();
+
         try {
             while (reader.readLine() != null) {
-                    builder.append(reader.readLine());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+                builder.append(reader.readLine());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         System.out.println(gson.toJson(builder));
     }
 
@@ -94,6 +106,7 @@ public class JavaWebSocketServer extends WebSocketServer {
 
         JavaWebSocketServer server = new JavaWebSocketServer(port);
         server.start();
+
         System.out.println("ChatServer started on port: " + server.getPort());
 
         BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));

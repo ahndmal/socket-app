@@ -10,14 +10,24 @@
 <h2>Socket</h2>
 
 <div>
-    <input type="text" name="msg" id="msg" />
-    <br />
-    <button id="msg-btn">Send</button>
+    <div style="display: flex; margin: 10px">
+        <div>
+            <label for="msg">Message:</label>
+            <input type="text" name="msg" id="msg" />
+            <br>
+            <br />
+            <button id="msg-btn">Send</button>
+        </div>
+        <div style="padding: 15px">
+            <h3>Chat</h3>
+            <div id="messages"></div>
+        </div>
+    </div>
 </div>
 
 <script>
     const btn = document.querySelector("#msg-btn");
-    const text = document.querySelector("#msg");
+    const msgRoot = document.querySelector("#messages");
 
     class Message {
         name = "";
@@ -30,30 +40,46 @@
         }
     }
 
-    btn.addEventListener("click", (evt) => {
-        let message = new Message(
-            "Hello from client",
-            Date.now().toString(),
-            "Ann Doe"
-        );
-
-        evt.preventDefault();
-        // socket.send(text.value);
-        ArrayBuffer.
-        socket.send(message);
-    });
-
     const socket = new WebSocket("ws://localhost:7072/chat");
+
     socket.onopen = function (event) {
         console.log("WebSocket is open now.");
     };
+
     socket.onmessage = function (event) {
-        console.info("WebSocket message received:", event);
+        console.info("[ <<< ] WebSocket message received:", event);
+
         console.log(event.data);
+
+        const replyObj = JSON.parse(event.data);
+
+        let msgElem = document.createElement("div");
+        msgElem.innerHTML = `
+        <div style="border: 2px solid blue">
+          <p>${replyObj.author}</p>
+          <p>${replyObj.body}</p>
+        </div>
+        `;
+
+        msgRoot.appendChild(msgElem);
     };
+
     socket.onclose = () => {
         console.log("socket closed");
     };
+
+    btn.addEventListener("click", (evt) => {
+        evt.preventDefault();
+        const text = document.querySelector("#msg");
+
+        let message = {
+            data: text.value,
+            date: Date.now().toString(),
+            user: "Anna Doe"
+        }
+
+        socket.send(JSON.stringify(message));
+    });
 </script>
 </body>
 </html>

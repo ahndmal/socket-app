@@ -5,13 +5,10 @@ import java.time.LocalDateTime;
 public class Message {
 
     private String body;
-    private LocalDateTime time;
+    private String time;
     private String author;
 
-    public Message() {
-    }
-
-    public Message(String body, LocalDateTime time, String author) {
+    public Message(String body, String time, String author) {
         this.body = body;
         this.time = time;
         this.author = author;
@@ -25,11 +22,11 @@ public class Message {
         this.body = body;
     }
 
-    public LocalDateTime getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(String time) {
         this.time = time;
     }
 

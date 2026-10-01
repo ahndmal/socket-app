@@ -1,5 +1,11 @@
 ### Java template
 # Compiled class file
+
+.idea
+build
+target
+*.iml
+
 *.class
 
 # Log file
